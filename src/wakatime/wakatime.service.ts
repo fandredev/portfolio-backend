@@ -27,7 +27,7 @@ export class WakatimeService {
     this.authorization = this.configService.get('WAKATIME_AUTHORIZATION');
   }
 
-  async getLastSevenDaysMyStats(): Promise<{ languages: Language[] }> {
+  async getLastSevenDaysMyStats() {
     const { data } = await firstValueFrom(
       this.httpService
         .get(`${this.statsLastSevenDays}/users/current/stats/last_7_days`, {
@@ -47,7 +47,8 @@ export class WakatimeService {
     );
 
     const languages = {
-      languages: data.languages,
+      languages: data.languages as Language[],
+      editors: data.editors,
     };
 
     return languages;
