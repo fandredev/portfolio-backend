@@ -25,7 +25,7 @@ export class WakatimeController {
     return languages.slice(0, 5);
   }
 
-  @Get('systems')
+  @Get('editors')
   @ApiOperation({
     summary: 'Obter meus editores mais usados e preferidos nos últimos 7 dias.',
   })

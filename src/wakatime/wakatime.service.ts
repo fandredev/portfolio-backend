@@ -8,8 +8,8 @@ import { ConfigService } from '@nestjs/config';
 import { catchError, firstValueFrom, map } from 'rxjs';
 
 import { AxiosError } from 'axios';
-import { Language } from './language';
 import { Environment } from 'src/interfaces/environment.interface';
+import { Language } from 'src/interfaces/programming-languages.interface';
 
 @Injectable()
 export class WakatimeService {

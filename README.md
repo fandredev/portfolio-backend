@@ -2,7 +2,7 @@
 
 # Stack used
 
-<img src="https://skillicons.dev/icons?i=typescript,nestjs,nodejs,pnpm,git&theme=dark" alt="typescript,nestjs,nodejs,pnpm,git" />
+<img src="https://skillicons.dev/icons?i=typescript,nestjs,nodejs,pnpm,jest,git&theme=dark" alt="typescript,nestjs,nodejs,pnpm,jest,git" />
 
 ### Other tools:
 
