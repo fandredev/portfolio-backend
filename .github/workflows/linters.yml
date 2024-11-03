@@ -1,4 +1,4 @@
-name: Run tests
+name: Run linting
 on:
   push:
 
@@ -22,5 +22,5 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Run tests
-        run: pnpm run test --verbose
+      - name: Run linter
+        run: pnpm run lint
