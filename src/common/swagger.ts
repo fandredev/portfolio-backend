@@ -10,7 +10,6 @@ export default class Swagger {
         'Rotas utilizadas para o desenvolvimento do meu portfólio',
       )
       .setVersion('1.0')
-      .addTag(this.tag)
       .build();
   }
 }

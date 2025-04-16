@@ -23,11 +23,4 @@ describe(`${Swagger.name}`, () => {
     );
     expect(documentBuilder.info.version).toBe('1.0');
   });
-
-  it(`should return a #${DocumentBuilder.name} instance with the correct tag`, () => {
-    const documentBuilder = swagger.config();
-
-    expect(documentBuilder.tags).toHaveLength(1);
-    expect(documentBuilder.tags[0].name).toBe(swagger.tag);
-  });
 });
