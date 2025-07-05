@@ -1,0 +1,14 @@
+# Ignora dependências locais, arquivos temporários e de build
+node_modules
+*.log
+dist
+coverage
+.env
+.DS_Store
+test
+src/**/*.spec.ts
+src/**/__tests__/
+.git
+.gitignore
+Dockerfile
+.dockerignore
