@@ -1,35 +1,43 @@
-# Dockerfile para projeto NestJS com pnpm
-FROM node:24.3.0-slim AS builder
+# Dockerfile optimized for NestJS with pnpm
+# Using Node 22 (LTS) Alpine for smaller footprint
+FROM node:22-alpine AS builder
 
 WORKDIR /usr/src/app
 
-# Instala pnpm globalmente
+# Install pnpm globally
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
-# Copia apenas arquivos essenciais para instalar dependências
+# Copy only essential files for installing dependencies properly
 COPY package.json pnpm-lock.yaml ./
 
-# Instala as dependências de produção e desenvolvimento
+# Install all dependencies (including dev) for building
 RUN pnpm install --frozen-lockfile
 
-# Copia o restante do código-fonte (exceto o que está no .dockerignore)
+# Copy source code
 COPY . .
 
-# Compila o projeto
+# Build the project
 RUN pnpm run build
 
-# Imagem final
-FROM node:24.3.0-slim AS runner
+# Prune dev dependencies to keep the image small
+RUN pnpm prune --prod
+
+# Final image
+FROM node:22-alpine AS runner
 WORKDIR /usr/src/app
 
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
-# Copia apenas os artefatos necessários da build
-COPY --from=builder /usr/src/app/package.json ./
-COPY --from=builder /usr/src/app/pnpm-lock.yaml ./
-COPY --from=builder /usr/src/app/node_modules ./node_modules
-COPY --from=builder /usr/src/app/dist ./dist
+# Set non-root user for security
+USER node
 
+# Copy necessary artifacts from builder
+COPY --chown=node:node --from=builder /usr/src/app/package.json ./
+COPY --chown=node:node --from=builder /usr/src/app/pnpm-lock.yaml ./
+COPY --chown=node:node --from=builder /usr/src/app/node_modules ./node_modules
+COPY --chown=node:node --from=builder /usr/src/app/dist ./dist
+
+# Application port
 EXPOSE 3000
 
 CMD ["node", "dist/main.js"]
