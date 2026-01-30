@@ -18,13 +18,13 @@
 
 ### Details
 
-Please, check the .tool-versions file before using this project to see which versions I used.
+Please, check the `.tool-versions` file before using this project to see which versions I used.
 
 I use pnpm to build this project. NestJS is flexible, so feel free to use another package manager if you prefer.
 
 ## Clone this repo
 
-###### Note: Check the .env.example file before cloning this repo
+###### Note: Check the `.env.example` file before cloning this repo
 
 ```
 git clone git@github.com:fandredev/portfolio-backend.git
