@@ -25,7 +25,7 @@ export class WakatimeController {
   @ApiInternalServerErrorResponse({
     description: 'Erro ao obter as linguagens do wakatime.',
   })
-  async getLanguages() {
+  async getLanguages(): Promise<any[]> {
     const { languages } = await this.wakatimeService.getLastSevenDaysMyStats();
 
     return languages.slice(0, 5);
@@ -45,7 +45,7 @@ export class WakatimeController {
     status: HttpStatus.INTERNAL_SERVER_ERROR,
     description: 'Erro ao obter meus editores preferidos da API do WakaTime.',
   })
-  async getEditors() {
+  async getEditors(): Promise<any[]> {
     const { editors } = await this.wakatimeService.getLastSevenDaysMyStats();
 
     return editors;

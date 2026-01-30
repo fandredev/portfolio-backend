@@ -1,5 +1,6 @@
 import { HttpService } from '@nestjs/axios';
 import {
+  HttpException,
   Injectable,
   InternalServerErrorException,
   Logger,
@@ -9,11 +10,11 @@ import { catchError, firstValueFrom, map } from 'rxjs';
 
 import { AxiosError } from 'axios';
 import { Environment } from 'src/interfaces/environment.interface';
-import { Language } from 'src/interfaces/programming-languages.interface';
+import { WakatimeStatsResponse } from 'src/interfaces/wakatime.interface';
 
 @Injectable()
 export class WakatimeService {
-  private readonly statsLastSevenDays: string;
+  private readonly wakatimeApiUrl: string;
   private readonly apiKey: string;
   private readonly authorization: string;
   private readonly logger = new Logger(WakatimeService.name);
@@ -22,7 +23,7 @@ export class WakatimeService {
     private readonly configService: ConfigService<Environment>,
     private readonly httpService: HttpService,
   ) {
-    this.statsLastSevenDays = this.configService.get('WAKATIME_BASE_API_URL');
+    this.wakatimeApiUrl = this.configService.get('WAKATIME_BASE_API_URL');
     this.apiKey = this.configService.get('WAKATIME_API_KEY');
     this.authorization = this.configService.get('WAKATIME_AUTHORIZATION');
   }
@@ -30,15 +31,29 @@ export class WakatimeService {
   async getLastSevenDaysMyStats() {
     const { data } = await firstValueFrom(
       this.httpService
-        .get(`${this.statsLastSevenDays}/users/current/stats/last_7_days`, {
-          headers: {
-            Authorization: `${this.authorization} ${this.apiKey}`,
+        .get<WakatimeStatsResponse>(
+          `${this.wakatimeApiUrl}/users/current/stats/last_7_days`,
+          {
+            headers: {
+              Authorization: `${this.authorization} ${this.apiKey}`,
+            },
           },
-        })
+        )
         .pipe(
           map((response) => response.data),
           catchError((error: AxiosError) => {
-            this.logger.error(error.response.data);
+            this.logger.error(
+              `Error fetching WakaTime stats: ${error.message}`,
+              error.response?.data,
+            );
+
+            if (error.response) {
+              throw new HttpException(
+                error.response.data || 'Error fetching data from WakaTime',
+                error.response.status,
+              );
+            }
+
             throw new InternalServerErrorException(
               'Erro ao obter as estatisticas.',
             );
@@ -46,11 +61,9 @@ export class WakatimeService {
         ),
     );
 
-    const languages = {
-      languages: data.languages as Language[],
+    return {
+      languages: data.languages,
       editors: data.editors,
     };
-
-    return languages;
   }
 }
