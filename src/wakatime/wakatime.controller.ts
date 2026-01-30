@@ -1,4 +1,4 @@
-import { Controller, Get, HttpStatus } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 import { WakatimeService } from './wakatime.service';
 import {
   ApiInternalServerErrorResponse,
@@ -42,7 +42,6 @@ export class WakatimeController {
       'Estatisticas do(s) editores que mais utilizo da API do WakaTime.',
   })
   @ApiInternalServerErrorResponse({
-    status: HttpStatus.INTERNAL_SERVER_ERROR,
     description: 'Erro ao obter meus editores preferidos da API do WakaTime.',
   })
   async getEditors(): Promise<any[]> {
