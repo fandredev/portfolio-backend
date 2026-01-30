@@ -5,7 +5,11 @@ import { HttpModule, HttpService } from '@nestjs/axios';
 import { Environment } from 'src/interfaces/environment.interface';
 import { AxiosResponse } from 'axios';
 
-import { HttpStatus, InternalServerErrorException } from '@nestjs/common';
+import {
+  HttpStatus,
+  InternalServerErrorException,
+  HttpException,
+} from '@nestjs/common';
 import { of, throwError } from 'rxjs';
 
 const mockWakatimeStatsConfig = {
@@ -104,18 +108,55 @@ describe(`${WakatimeService.name}`, () => {
     });
   });
 
-  it('should return all wakatime stats with error', async () => {
+  it('should throw HttpException when upstream API returns error', async () => {
+    const errorResponse = {
+      response: {
+        data: { message: 'Too Many Requests' },
+        status: HttpStatus.TOO_MANY_REQUESTS,
+      },
+      message: 'Too Many Requests',
+    };
+
     jest
       .spyOn(httpService, 'get')
-      .mockReturnValue(
-        throwError(
-          () =>
-            new InternalServerErrorException('Erro ao obter as estatisticas.'),
-        ) as any,
-      );
+      .mockReturnValue(throwError(() => errorResponse) as any);
+
+    await expect(wakatimeService.getLastSevenDaysMyStats()).rejects.toThrow(
+      HttpException,
+    );
+  });
+
+  it('should throw InternalServerErrorException on unknown error', async () => {
+    jest
+      .spyOn(httpService, 'get')
+      .mockReturnValue(throwError(() => new Error('Unknown')) as any);
 
     await expect(wakatimeService.getLastSevenDaysMyStats()).rejects.toThrow(
       InternalServerErrorException,
     );
+  });
+
+  it('should throw HttpException with default message when upstream API returns empty error data', async () => {
+    const errorResponse = {
+      response: {
+        data: null,
+        status: HttpStatus.BAD_REQUEST,
+      },
+      message: 'Bad Request',
+    };
+
+    jest
+      .spyOn(httpService, 'get')
+      .mockReturnValue(throwError(() => errorResponse) as any);
+
+    await expect(wakatimeService.getLastSevenDaysMyStats()).rejects.toThrow(
+      HttpException,
+    );
+
+    try {
+      await wakatimeService.getLastSevenDaysMyStats();
+    } catch (error) {
+      expect(error.response).toBe('Error fetching data from WakaTime');
+    }
   });
 });
