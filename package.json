@@ -69,7 +69,7 @@
   "pnpm": {
     "overrides": {
       "lodash": "^4.17.23",
-      "brace-expansion": "^2.0.2"
+      "brace-expansion": "^2.0.3"
     }
   }
 }
